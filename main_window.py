@@ -1,18 +1,24 @@
-from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget
+from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox
 from PyQt5.QtGui import QPixmap
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
 
 class Form(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setFixedSize(500,500)
+        self.setFixedSize(700,700)
 
         #label
         inputlbl = QLabel(self)
         inputlbl.setText("text to add to picture:")
         inputlbl.move(50,50)
+
+        #MessageBox
+        self.message = QMessageBox(self)
+        self.message.setText("that's it")
+        self.message.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        
 
         #inputs
         self.textToAddtxtbox = QLineEdit(self)
@@ -35,21 +41,27 @@ class Form(QMainWindow):
         addbtn.clicked.connect(self.edit_files)
 
         #Preview the image
-        preview = QLabel(self)
+        self.previewlbl = QLabel(self)
+        self.previewlbl.move(300,200)
+        self.previewlbl.setFixedSize(300,300)
+    
 
         #list of selected files
         self.listOfSelectedFiles = QListWidget(self)
         self.listOfSelectedFiles.setFixedSize(200,100)
         self.listOfSelectedFiles.move(50,200)
-        self.listOfSelectedFiles.itemClicked.connect(str(preview.setText(self.listOfSelectedFiles.currentItem().text())))
+        self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
+    
+    def on_item_clicked(self,item):
+        image = Image.open(item.text())
+        imageCopy = image.copy()
+        max_size = (256,256)
+        image.thumbnail(max_size,Image.Resampling.LANCZOS)
+        image.save("C:\\Users\\Reza\\Desktop")
+        pixmap = QPixmap(item.text())
+        self.previewlbl.setPixmap(pixmap)
         
 
-        
-        
-        
-    def preview(self):
-        print(self.listOfSelectedFiles.currentItem().text())
-        #pixmap = QPixmap(preview)
 
     
     def open_file_dialog(self):
