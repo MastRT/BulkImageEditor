@@ -2,12 +2,15 @@ from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog
 from PyQt5.QtGui import QPixmap
 from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
+import os
 
 class Form(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setFixedSize(700,700)
+
+        self.fileNameAndAddress = []
 
         #label
         inputlbl = QLabel(self)
@@ -53,19 +56,22 @@ class Form(QMainWindow):
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
     
     def on_item_clicked(self,item):
-        image = Image.open(item.text())
-        imageCopy = image.copy()
-        max_size = (256,256)
-        image.thumbnail(max_size,Image.Resampling.LANCZOS)
-        image.save("C:\\Users\\Reza\\Desktop")
-        pixmap = QPixmap(item.text())
-        self.previewlbl.setPixmap(pixmap)
-        
+        for address in self.fileNameAndAddress:
+            if item.text() == address[0]:
+                print(address[0])
 
+        # image = Image.open(item.text())
+        # max_size = (256,256)
+        # image.thumbnail(max_size,Image.Resampling.LANCZOS)
+        # image.save("C:\\Users\\Reza\\Desktop\\thumb.jpg")
+        # pixmap = QPixmap(item.text())
+        # self.previewlbl.setPixmap(pixmap)
+        
 
     
     def open_file_dialog(self):
-        self.listofFiles = []
+        self.listofFilesAddress = []
+        # nameAndAddressTuple = tuple()
         filenames, _ = QFileDialog.getOpenFileNames(
             self,
             "Select Files",
@@ -73,10 +79,14 @@ class Form(QMainWindow):
             "Images (*.png *.jpg)"
         )
         if filenames:
-            self.listofFiles.extend([str(Path(filename))
+            self.listofFilesAddress.extend([str(Path(filename))
                                      for filename in filenames])
-        self.listOfSelectedFiles.addItems(self.listofFiles)
+        for filename in self.listofFilesAddress:
+            nameAndAddressTuple = (os.path.basename(filename),filename)
+            self.fileNameAndAddress.append(nameAndAddressTuple)
+            self.listOfSelectedFiles.addItem(os.path.basename(filename))
             
+
     def edit_files(self):
         for x in self.listofFiles:
             img = Image.open(x)
