@@ -1,24 +1,19 @@
-from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox
+from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox,QTableWidget
 from PyQt5.QtGui import QPixmap
 from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
-
 import os
-
-counter = 50
-
-
 
 class Form(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setFixedSize(700,700)
-
+        self.state = {'position':50}
+        self.addedTxtBoxes = []
         self.fileNameAndAddress = []
         self.textbox = []
-
-
+        
         #label
         inputlbl = QLabel(self)
         inputlbl.setText("text to add to picture:")
@@ -50,7 +45,6 @@ class Form(QMainWindow):
         addbtn.move(400,100)
         addbtn.clicked.connect(self.edit_files)
 
-
         #Add more textbox
         addMoreTextBoxbtn = QPushButton(self)
         addMoreTextBoxbtn.setText("+")
@@ -64,7 +58,6 @@ class Form(QMainWindow):
         self.previewlbl.setFixedSize(300,300)
         self.previewlbl.setStyleSheet("border: 2px solid black;" \
         "text-align: justify")
-
     
 
         #list of selected files
@@ -72,14 +65,38 @@ class Form(QMainWindow):
         self.listOfSelectedFiles.setFixedSize(200,100)
         self.listOfSelectedFiles.move(50,200)
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
+########### buggy ---------------------- >
+        #list of loaded data
+        self.listOfloadedData = QTableWidget(self)
+        self.listOfloadedData.setFixedSize(200,100)
+        self.listOfloadedData.move(50,350)
 
-
-
+        showBtn = QPushButton(self)
+        showBtn.setText("Show")
+        showBtn.move(500,50)
+        showBtn.clicked.connect(self.showmsg)
+    
+    def showmsg(self):
+        file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
+        file = open(file_path,'r')
+        lines = file.readlines()
+        row = 0
+        column = 0
+        for line in lines:
+            self.listOfloadedData.setItem(self,row,column)
+            column += 1
+            if line == "==\n":
+                column = 0
+                row += 1
+                
+########### buggy <-----------------------
+   
 
     def addMoretxtBoxes(self):
         box = QLineEdit(self)
-        yPosition = counter+50
-        box.move(200,yPosition)
+        self.state['position'] += 50
+        box.move(200,self.state['position'])
+        self.addedTxtBoxes.append(box) # add new text boxes to program to an array for foloowing it
         box.show()
         
 
@@ -100,7 +117,6 @@ class Form(QMainWindow):
                         image.save(f"C:\\Users\\Reza\\Desktop\\temp\\{item.text()}")
         
 
-
     
     def open_file_dialog(self):
         self.listofFilesAddress = []
@@ -114,21 +130,17 @@ class Form(QMainWindow):
         if filenames:
             self.listofFilesAddress.extend([str(Path(filename))
                                      for filename in filenames])
-
         for filename in self.listofFilesAddress:
             nameAndAddressTuple = (os.path.basename(filename),filename)
             self.fileNameAndAddress.append(nameAndAddressTuple)
             self.listOfSelectedFiles.addItem(os.path.basename(filename))
-
-               
+            
 
     def edit_files(self):
         for x in self.fileNameAndAddress:
             img = Image.open(x[1])
             draw = ImageDraw.Draw(img)
             draw.text((300,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
-
             img.save(f"C:\\Users\\Reza\\Desktop\\result\\{x[0]}")
-
 
             
