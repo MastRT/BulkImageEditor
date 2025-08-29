@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox,QTableWidget
+from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem
 from PyQt5.QtGui import QPixmap
 from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
@@ -70,11 +70,19 @@ class Form(QMainWindow):
         self.listOfloadedData = QTableWidget(self)
         self.listOfloadedData.setFixedSize(200,100)
         self.listOfloadedData.move(50,350)
+#        self.listOfloadedData.setHorizontalHeaderLabels(columns)
+        self.listOfloadedData.setItem(0,0,QTableWidgetItem("test"))
+        self.listOfloadedData.show()
 
         showBtn = QPushButton(self)
         showBtn.setText("Show")
         showBtn.move(500,50)
         showBtn.clicked.connect(self.showmsg)
+
+    def getNumberOfRowsAndCoumns(self):
+        #some stuff will be here
+        print("hello word")
+
     
     def showmsg(self):
         file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
@@ -83,11 +91,13 @@ class Form(QMainWindow):
         row = 0
         column = 0
         for line in lines:
-            self.listOfloadedData.setItem(self,row,column)
+            self.listOfloadedData.setItem(row,column,QTableWidgetItem(line))
             column += 1
             if line == "==\n":
                 column = 0
                 row += 1
+        self.listOfloadedData.setColumnCount(column)
+        self.listOfloadedData.setRowCount(row)
                 
 ########### buggy <-----------------------
    
