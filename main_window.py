@@ -68,10 +68,10 @@ class Form(QMainWindow):
 ########### buggy ---------------------- >
         #list of loaded data
         self.listOfloadedData = QTableWidget(self)
-        self.listOfloadedData.setFixedSize(200,100)
+        self.listOfloadedData.setFixedSize(200,300)
         self.listOfloadedData.move(50,350)
-#        self.listOfloadedData.setHorizontalHeaderLabels(columns)
-        self.listOfloadedData.setItem(0,0,QTableWidgetItem("test"))
+        #self.listOfloadedData.setHorizontalHeaderLabels(columns)
+        #self.listOfloadedData.setItem(0,0,QTableWidgetItem("test"))
         self.listOfloadedData.show()
 
         showBtn = QPushButton(self)
@@ -79,25 +79,38 @@ class Form(QMainWindow):
         showBtn.move(500,50)
         showBtn.clicked.connect(self.showmsg)
 
-    def getNumberOfRowsAndCoumns(self):
-        #some stuff will be here
-        print("hello word")
-
-    
-    def showmsg(self):
+    def loadListOfNamesFile(self):
         file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
         file = open(file_path,'r')
         lines = file.readlines()
+        return lines
+    
+    def lookForHeader(self,lookingForHeader):
+        line = self.loadListOfNamesFile()
+        listOfHeaders = []
+        listOfHeaders.append(line)
+        lookingForHeader = True
+        if line == "--\n":
+            lookingForHeader = False
+            column = len(listOfHeaders)-1
+            self.listOfloadedData.setColumnCount(column)
+            self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
+        return lookingForHeader
+
+
+    def showmsg(self):
+        lines = self.loadListOfNamesFile()
         row = 0
         column = 0
+        lookingForHeader = True
         for line in lines:
-            self.listOfloadedData.setItem(row,column,QTableWidgetItem(line))
-            column += 1
-            if line == "==\n":
-                column = 0
-                row += 1
-        self.listOfloadedData.setColumnCount(column)
-        self.listOfloadedData.setRowCount(row)
+            if lookingForHeader == True:
+                lookingForHeader = self.lookForHeader(lookingForHeader,line)
+            if lookingForHeader == False:
+                self.listOfloadedData.setItem(row,column,QTableWidgetItem(line))
+                if line == "==\n":
+                    row += 1
+            self.listOfloadedData.setRowCount(row)
                 
 ########### buggy <-----------------------
    
