@@ -85,32 +85,33 @@ class Form(QMainWindow):
         lines = file.readlines()
         return lines
     
-    def lookForHeader(self,lookingForHeader):
-        line = self.loadListOfNamesFile()
-        listOfHeaders = []
-        listOfHeaders.append(line)
-        lookingForHeader = True
-        if line == "--\n":
-            lookingForHeader = False
-            column = len(listOfHeaders)-1
-            self.listOfloadedData.setColumnCount(column)
-            self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
-        return lookingForHeader
-
 
     def showmsg(self):
         lines = self.loadListOfNamesFile()
-        row = 0
+        listOfHeaders = []
+        numberOfColumns = 0
+        row = 1
         column = 0
         lookingForHeader = True
         for line in lines:
             if lookingForHeader == True:
-                lookingForHeader = self.lookForHeader(lookingForHeader,line)
+                if line == "--\n":
+                    lookingForHeader = False
+                    self.listOfloadedData.setColumnCount(column)
+                    self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
+                column += 1
+                listOfHeaders.append(line)
             if lookingForHeader == False:
-                self.listOfloadedData.setItem(row,column,QTableWidgetItem(line))
+                self.listOfloadedData.setRowCount(2)
+                if (line != "==\n") and (line != "--\n"):
+                    if numberOfColumns < len(listOfHeaders):
+                        self.listOfloadedData.setItem(row,numberOfColumns,QTableWidgetItem(line))
+                        numberOfColumns += 1
                 if line == "==\n":
                     row += 1
-            self.listOfloadedData.setRowCount(row)
+                    numberOfColumns = 0
+            
+        
                 
 ########### buggy <-----------------------
    
