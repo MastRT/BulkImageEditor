@@ -65,13 +65,9 @@ class Form(QMainWindow):
         self.listOfSelectedFiles.setFixedSize(200,100)
         self.listOfSelectedFiles.move(50,200)
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
-########### buggy ---------------------- >
-        #list of loaded data
         self.listOfloadedData = QTableWidget(self)
         self.listOfloadedData.setFixedSize(200,300)
         self.listOfloadedData.move(50,350)
-        #self.listOfloadedData.setHorizontalHeaderLabels(columns)
-        #self.listOfloadedData.setItem(0,0,QTableWidgetItem("test"))
         self.listOfloadedData.show()
 
         showBtn = QPushButton(self)
@@ -102,14 +98,18 @@ class Form(QMainWindow):
                 column += 1
                 listOfHeaders.append(line)
             if lookingForHeader == False:
-                self.listOfloadedData.setRowCount(2)
-                if (line != "==\n") and (line != "--\n"):
+                if (line != "==\n") and (line != "--\n") and (line != "EOF\n"):
                     if numberOfColumns < len(listOfHeaders):
+                        self.listOfloadedData.setHorizontalHeaderItem(row,numberOfColumns,QTableWidget(line))
                         self.listOfloadedData.setItem(row,numberOfColumns,QTableWidgetItem(line))
                         numberOfColumns += 1
                 if line == "==\n":
                     row += 1
                     numberOfColumns = 0
+                if line == "EOF\n":
+                    self.listOfloadedData.setRowCount(row)
+        self.listOfloadedData.show()
+
             
         
                 
