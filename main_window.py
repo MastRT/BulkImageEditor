@@ -83,37 +83,31 @@ class Form(QMainWindow):
     
 
     def showmsg(self):
-        lines = self.loadListOfNamesFile()
-        listOfHeaders = []
+        lines = self.loadListOfNamesFile() #Seperated the loading procces into another function for better clarity
+        listOfHeaders = [] #this var will be used to store column name
         numberOfColumns = 0
-        row = 1
+        row = 0
         column = 0
-        lookingForHeader = True
+        lookingForHeader = True #at first function tries to look for header name in first lines so it's True by default
         for line in lines:
             if lookingForHeader == True:
-                if line == "--\n":
+                if line == "--\n": # of you reached the end of header section
                     lookingForHeader = False
                     self.listOfloadedData.setColumnCount(column)
                     self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
                 column += 1
                 listOfHeaders.append(line)
             if lookingForHeader == False:
-                if (line != "==\n") and (line != "--\n") and (line != "EOF\n"):
+                self.listOfloadedData.setRowCount(row+1)
+                if (line != "==\n") and (line != "--\n"):
                     if numberOfColumns < len(listOfHeaders):
-                        self.listOfloadedData.setHorizontalHeaderItem(row,numberOfColumns,QTableWidget(line))
                         self.listOfloadedData.setItem(row,numberOfColumns,QTableWidgetItem(line))
                         numberOfColumns += 1
                 if line == "==\n":
                     row += 1
                     numberOfColumns = 0
-                if line == "EOF\n":
-                    self.listOfloadedData.setRowCount(row)
-        self.listOfloadedData.show()
+        self.listOfloadedData.resizeRowsToContents()
 
-            
-        
-                
-########### buggy <-----------------------
    
 
     def addMoretxtBoxes(self):
@@ -131,14 +125,14 @@ class Form(QMainWindow):
             # if item.text() != "":
                 if item.text() == address[0]:   #check if the file names are Same
                     try: #Try opening the thumbnail if it was created before
-                        pixmap = QPixmap(f"C:\\Users\\Reza\\Desktop\\temp\\{item.text()}")
+                        pixmap = QPixmap(f"C:\\Users\\Reza\\Desktop\\temp\\thumbnail-{item.text()}")
                         self.previewlbl.setPixmap(pixmap)
                     finally: #if the thumbnail was not created,tries to create it
                         image = Image.open(address[1])
                         copy = image.copy()
                         max_size = (256,256)
                         image.thumbnail(max_size,Image.Resampling.LANCZOS)
-                        image.save(f"C:\\Users\\Reza\\Desktop\\temp\\{item.text()}")
+                        image.save(f"C:\\Users\\Reza\\Desktop\\temp\\thumbnail-{item.text()}")
         
 
     
@@ -163,8 +157,9 @@ class Form(QMainWindow):
     def edit_files(self):
         for x in self.fileNameAndAddress:
             img = Image.open(x[1])
-            draw = ImageDraw.Draw(img)
-            draw.text((300,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
+            cloned = img
+            draw = ImageDraw.Draw(cloned)
+            draw.text((50,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
             img.save(f"C:\\Users\\Reza\\Desktop\\result\\{x[0]}")
 
             
