@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
 import os
+import logging
 
 class Form(QMainWindow):
     def __init__(self):
@@ -155,11 +156,24 @@ class Form(QMainWindow):
             
 
     def edit_files(self):
-        for x in self.fileNameAndAddress:
-            img = Image.open(x[1])
-            cloned = img
-            draw = ImageDraw.Draw(cloned)
-            draw.text((50,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
-            img.save(f"C:\\Users\\Reza\\Desktop\\result\\{x[0]}")
+        # ----> This secction adds one text to multiple pictures
+        # for x in self.fileNameAndAddress: # Array that contains list of image adresses
+        #     img = Image.open(x[1])
+        #     draw = ImageDraw.Draw(img)
+        #     draw.text((50,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
+        #     img.save(f"C:\\Users\\Reza\\Desktop\\result\\{x[0]}")
+        # <-----
+        # \\\\\\\\\\\\\\\\\ This Lower section adds qtable data to one picture
+        listOfPositions = [{"NameX":450,"NameY":450},{"FamilyX":450,"FamilyY":450},
+                           {"LocationX":450,"LocationY":450},{"AgeX":450,"AgeY":450}]
+        numberOfTableRows = self.listOfloadedData.rowCount()
+        numberOfTableColumns = self.listOfloadedData.columnCount()
+        for row in range(0,numberOfTableRows):
+            for column in range(0,numberOfTableColumns):
+                cellData = self.listOfloadedData.item(row,column).text()
+                logging.warning(cellData)
+
+        
+
 
             
