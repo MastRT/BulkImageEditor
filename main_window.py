@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
+    ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
+    ,QComboBox,QColorDialog
+from PyQt5.QtGui import QPixmap,QFontDatabase
 from PIL import Image,ImageDraw,ImageFont,ImageQt
 from pathlib import Path
 import os
@@ -14,22 +16,13 @@ class Form(QMainWindow):
         self.addedTxtBoxes = []
         self.fileNameAndAddress = []
         self.textbox = []
-        
-        #label
-        inputlbl = QLabel(self)
-        inputlbl.setText("text to add to picture:")
-        inputlbl.move(50,50)
+
 
         #MessageBox
         self.message = QMessageBox(self)
         self.message.setText("that's it")
         self.message.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         
-
-        #inputs
-        self.textToAddtxtbox = QLineEdit(self)
-        self.textToAddtxtbox.move(200,50)
-
         #directory Dialog
         dialog = QFileDialog(self)
         dialog.setNameFilter("Images (*.png *.jpg)")
@@ -64,17 +57,38 @@ class Form(QMainWindow):
         #list of selected files
         self.listOfSelectedFiles = QListWidget(self)
         self.listOfSelectedFiles.setFixedSize(200,100)
-        self.listOfSelectedFiles.move(50,200)
+        self.listOfSelectedFiles.move(50,82)
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
+        
+        #Loaded data table
         self.listOfloadedData = QTableWidget(self)
-        self.listOfloadedData.setFixedSize(200,300)
-        self.listOfloadedData.move(50,350)
+        self.listOfloadedData.setFixedSize(200,200)
+        self.listOfloadedData.move(50,200)
         self.listOfloadedData.show()
+
+        #Load Fonts on system
+        allFonts = QFontDatabase().families()
+
+        #ComboOfLoadedFonts
+        cmboFont = QComboBox(self)
+        cmboFont.move(50,450)
+        cmboFont.setFixedWidth(200)
+        cmboFont.addItems(allFonts) # add fonts to combobox
+
+        # Color Picker button
+        self.colorPicketBtn = QPushButton("Color",self)
+        self.colorPicketBtn.move(50,500)
+        self.colorPicketBtn.clicked.connect(self.openColorDialog)
 
         showBtn = QPushButton(self)
         showBtn.setText("Show")
         showBtn.move(500,50)
         showBtn.clicked.connect(self.showmsg)
+
+    def openColorDialog(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            print(color.getRgb())
 
     def loadListOfNamesFile(self):
         file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
@@ -156,22 +170,20 @@ class Form(QMainWindow):
             
 
     def edit_files(self):
-        # ----> This secction adds one text to multiple pictures
-        # for x in self.fileNameAndAddress: # Array that contains list of image adresses
-        #     img = Image.open(x[1])
-        #     draw = ImageDraw.Draw(img)
-        #     draw.text((50,69),self.textToAddtxtbox.text(),font=ImageFont.truetype("arial.ttf",60),fill=(255,0,0),align="center")
-        #     img.save(f"C:\\Users\\Reza\\Desktop\\result\\{x[0]}")
-        # <-----
-        # \\\\\\\\\\\\\\\\\ This Lower section adds qtable data to one picture
-        listOfPositions = [{"NameX":450,"NameY":450},{"FamilyX":450,"FamilyY":450},
-                           {"LocationX":450,"LocationY":450},{"AgeX":450,"AgeY":450}]
+        listOfPositions = [[89,43],[97,105],[114,169],[296,44]] #position of text to draw
         numberOfTableRows = self.listOfloadedData.rowCount()
         numberOfTableColumns = self.listOfloadedData.columnCount()
+        addressOfPicture = self.fileNameAndAddress[0][1] #load first line of addressbox
         for row in range(0,numberOfTableRows):
+            img = Image.open(addressOfPicture)
+            draw = ImageDraw.Draw(img)
             for column in range(0,numberOfTableColumns):
                 cellData = self.listOfloadedData.item(row,column).text()
-                logging.warning(cellData)
+                x = listOfPositions[column][0]
+                y = listOfPositions[column][1]
+                draw.text((x,y),cellData,font=ImageFont.truetype("arial.ttf",15),fill=(255,0,0),align="center")
+            img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
+                
 
         
 
