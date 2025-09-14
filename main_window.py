@@ -79,6 +79,7 @@ class Form(QMainWindow):
         self.colorPicketBtn = QPushButton("Color",self)
         self.colorPicketBtn.move(50,500)
         self.colorPicketBtn.clicked.connect(self.openColorDialog)
+        self.fontColor = (0,0,0)
 
         showBtn = QPushButton(self)
         showBtn.setText("Show")
@@ -88,7 +89,8 @@ class Form(QMainWindow):
     def openColorDialog(self):
         color = QColorDialog.getColor()
         if color.isValid():
-            print(color.getRgb())
+            self.colorPicketBtn.setStyleSheet(f"background-color: rgb{color.getRgb()[:3]};")
+            self.fontColor = color.getRgb()[:3]
 
     def loadListOfNamesFile(self):
         file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
@@ -181,7 +183,7 @@ class Form(QMainWindow):
                 cellData = self.listOfloadedData.item(row,column).text()
                 x = listOfPositions[column][0]
                 y = listOfPositions[column][1]
-                draw.text((x,y),cellData,font=ImageFont.truetype("arial.ttf",15),fill=(255,0,0),align="center")
+                draw.text((x,y),cellData,font=ImageFont.truetype("arial.ttf",15),fill=self.fontColor,align="center")
             img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
                 
 
