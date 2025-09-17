@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
     ,QComboBox,QColorDialog
-from PyQt5.QtGui import QPixmap,QFontDatabase
-from PIL import Image,ImageDraw,ImageFont,ImageQt
+from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
+from PyQt5.QtCore import Qt
+from PIL import Image,ImageDraw,ImageFont
 from pathlib import Path
 import os
-import logging
 
 class Form(QMainWindow):
     def __init__(self):
@@ -16,6 +16,7 @@ class Form(QMainWindow):
         self.addedTxtBoxes = []
         self.fileNameAndAddress = []
         self.textbox = []
+        self.font_path = ''
 
 
         #MessageBox
@@ -70,10 +71,16 @@ class Form(QMainWindow):
         allFonts = QFontDatabase().families()
 
         #ComboOfLoadedFonts
-        cmboFont = QComboBox(self)
-        cmboFont.move(50,450)
-        cmboFont.setFixedWidth(200)
-        cmboFont.addItems(allFonts) # add fonts to combobox
+        self.cmboFont = QComboBox(self)
+        self.cmboFont.move(50,450)
+        self.cmboFont.setFixedWidth(200)
+        # self.cmboFont.addItems(allFonts) # add fonts to combobox
+        for font in allFonts:
+           self.cmboFont.addItem(font)
+           # Make each item styled in its own font
+           index = self.cmboFont.count() - 1
+           self.cmboFont.setItemData(index, QFont(font), role=Qt.FontRole)
+        self.cmboFont.currentTextChanged.connect(self.get_text)
 
         # Color Picker button
         self.colorPicketBtn = QPushButton("Color",self)
@@ -85,6 +92,12 @@ class Form(QMainWindow):
         showBtn.setText("Show")
         showBtn.move(500,50)
         showBtn.clicked.connect(self.showmsg)
+
+        
+
+    def get_text(self,fontname):
+        from matplotlib import font_manager
+        self.font_path = font_manager.findfont(fontname, fallback_to_default=False)
 
     def openColorDialog(self):
         color = QColorDialog.getColor()
@@ -183,7 +196,7 @@ class Form(QMainWindow):
                 cellData = self.listOfloadedData.item(row,column).text()
                 x = listOfPositions[column][0]
                 y = listOfPositions[column][1]
-                draw.text((x,y),cellData,font=ImageFont.truetype("arial.ttf",15),fill=self.fontColor,align="center")
+                draw.text((x,y),cellData,font=ImageFont.truetype(self.font_path,15),fill=self.fontColor,align="center")
             img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
                 
 
