@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
-    ,QComboBox,QColorDialog
+    ,QComboBox,QColorDialog,QCheckBox
 from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
 from PyQt5.QtCore import Qt
 from PIL import Image,ImageDraw,ImageFont
@@ -33,6 +33,7 @@ class Form(QMainWindow):
         openbtn.setText("Open")
         openbtn.move(400,50)
         openbtn.clicked.connect(self.open_file_dialog)
+
 
         #Add Text
         addbtn = QPushButton(self)
@@ -88,12 +89,28 @@ class Form(QMainWindow):
         self.colorPicketBtn.clicked.connect(self.openColorDialog)
         self.fontColor = (0,0,0)
 
+        # Checkbox to Add pictures to a file
+        enableAddPictureToTemplate = QCheckBox(self)
+        enableAddPictureToTemplate.setText("enable to add pitures to Templae ")
+        enableAddPictureToTemplate.move(0,0)
+        enableAddPictureToTemplate.stateChanged.connect(self.checkToEnableAddToTemplate)
+
+        # list for template Picture
+        self.listForTemplatePictures = QListWidget(self)
+        self.listForTemplatePictures.move(50,50)
+        self.listForTemplatePictures.setDisabled(True)
+
         showBtn = QPushButton(self)
         showBtn.setText("Show")
         showBtn.move(500,50)
         showBtn.clicked.connect(self.showmsg)
 
         
+    def checkToEnableAddToTemplate(self,checked):
+        if checked:
+            self.listForTemplatePictures.setEnabled(True)
+        else:
+            self.listForTemplatePictures.setDisabled(True)
 
     def get_text(self,fontname):
         from matplotlib import font_manager
