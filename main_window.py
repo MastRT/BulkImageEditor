@@ -11,12 +11,15 @@ class Form(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setFixedSize(700,700)
+        self.setFixedSize(900,600)
         self.state = {'position':50}
         self.addedTxtBoxes = []
         self.fileNameAndAddress = []
         self.textbox = []
         self.font_path = ''
+
+        #Style for all functional buttons in program
+        btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;}"
 
 
         #MessageBox
@@ -28,44 +31,86 @@ class Form(QMainWindow):
         dialog = QFileDialog(self)
         dialog.setNameFilter("Images (*.png *.jpg)")
 
-        #Open button
-        openbtn = QPushButton(self)
-        openbtn.setText("Open")
-        openbtn.move(400,50)
-        openbtn.clicked.connect(self.open_file_dialog)
+        #button for adding to picture list
+        addPicturebtn = QPushButton(self)
+        addPicturebtn.setText("add picture")
+        addPicturebtn.setFixedSize(300,27)
+        addPicturebtn.setObjectName("btn")
+        addPicturebtn.setStyleSheet(btnStyle)
+        addPicturebtn.move(52,302)
+        addPicturebtn.clicked.connect(self.open_file_dialog)
+
+        #button for adding data to list
+        addDatabtn = QPushButton(self)
+        addDatabtn.setText("add data")
+        addDatabtn.setFixedSize(300,27)
+        addDatabtn.setObjectName("btn")
+        addDatabtn.setStyleSheet(btnStyle)
+        addDatabtn.move(53,514)
+
 
 
         #Add Text
         addbtn = QPushButton(self)
-        addbtn.setText("add file")
+        addbtn.setText("Run")
+        addbtn.setObjectName("btn")
+        addbtn.setStyleSheet(btnStyle)
         addbtn.move(400,100)
         addbtn.clicked.connect(self.edit_files)
 
         #Add more textbox
         addMoreTextBoxbtn = QPushButton(self)
         addMoreTextBoxbtn.setText("+")
+        addMoreTextBoxbtn.setObjectName("btn")
+        addMoreTextBoxbtn.setStyleSheet(btnStyle)
         addMoreTextBoxbtn.move(400,150)
         addMoreTextBoxbtn.clicked.connect(self.addMoretxtBoxes)
+
+        # Color Picker button
+        self.colorPicketBtn = QPushButton("Color",self)
+        self.colorPicketBtn.move(50,500)
+        self.colorPicketBtn.setObjectName("btn")
+        self.colorPicketBtn.setStyleSheet(btnStyle)
+        self.colorPicketBtn.clicked.connect(self.openColorDialog)
+        self.fontColor = (0,0,0)
+
+        showBtn = QPushButton(self)
+        showBtn.setText("Show")
+        showBtn.setObjectName("btn")
+        showBtn.setStyleSheet(btnStyle)
+        showBtn.move(500,50)
+        showBtn.clicked.connect(self.showmsg)
 
         #Preview the image
         self.previewlbl = QLabel(self)
         self.previewlbl.setText("Empty")
-        self.previewlbl.move(300,200)
-        self.previewlbl.setFixedSize(300,300)
-        self.previewlbl.setStyleSheet("border: 2px solid black;" \
+        self.previewlbl.move(377,94)
+        self.previewlbl.setFixedSize(480,230)
+        self.previewlbl.setStyleSheet("background-color: #003f74;" \
         "text-align: justify")
     
 
+        
+        #Style for all lists in program
+        listStyle = "QListWidget#list{background-color: #003f74;color:white;border:none;font:16px;}"
+
         #list of selected files
         self.listOfSelectedFiles = QListWidget(self)
-        self.listOfSelectedFiles.setFixedSize(200,100)
-        self.listOfSelectedFiles.move(50,82)
+        self.listOfSelectedFiles.setFixedSize(301,143)
+        self.listOfSelectedFiles.setObjectName("list")
+        self.listOfSelectedFiles.setStyleSheet(listStyle)
+        self.listOfSelectedFiles.move(53,148)
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
         
+        #Style for all tables in program
+        tableStyle = "QTableWidget#table{background-color: #003f74;color:white;border:none;font:16px;}"
+
         #Loaded data table
         self.listOfloadedData = QTableWidget(self)
-        self.listOfloadedData.setFixedSize(200,200)
-        self.listOfloadedData.move(50,200)
+        self.listOfloadedData.setFixedSize(300,143)
+        self.listOfloadedData.setObjectName("table")
+        self.listOfloadedData.setStyleSheet(tableStyle)
+        self.listOfloadedData.move(53,361)
         self.listOfloadedData.show()
 
         #Load Fonts on system
@@ -81,14 +126,8 @@ class Form(QMainWindow):
            # Make each item styled in its own font
            index = self.cmboFont.count() - 1
            self.cmboFont.setItemData(index, QFont(font), role=Qt.FontRole)
+
         self.cmboFont.currentTextChanged.connect(self.get_text)
-
-        # Color Picker button
-        self.colorPicketBtn = QPushButton("Color",self)
-        self.colorPicketBtn.move(50,500)
-        self.colorPicketBtn.clicked.connect(self.openColorDialog)
-        self.fontColor = (0,0,0)
-
         # Checkbox to Add pictures to a file
         enableAddPictureToTemplate = QCheckBox(self)
         enableAddPictureToTemplate.setText("enable to add pitures to Templae ")
@@ -100,10 +139,6 @@ class Form(QMainWindow):
         self.listForTemplatePictures.move(50,50)
         self.listForTemplatePictures.setDisabled(True)
 
-        showBtn = QPushButton(self)
-        showBtn.setText("Show")
-        showBtn.move(500,50)
-        showBtn.clicked.connect(self.showmsg)
 
         
     def checkToEnableAddToTemplate(self,checked):
