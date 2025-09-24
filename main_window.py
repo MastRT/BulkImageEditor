@@ -11,12 +11,46 @@ class Form(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.setFixedSize(900,600)
         self.state = {'position':50}
         self.addedTxtBoxes = []
         self.fileNameAndAddress = []
         self.textbox = []
         self.font_path = ''
+
+        # Background LBL
+        background_lbl = QLabel(self)
+        background_lbl.setFixedSize(900,600)
+        background_lbl.setStyleSheet("background-image: url(img/background.jpg);" \
+        "background-repeat: no-repeat;" \
+        "background-position: center;")
+        background_lbl.lower()
+
+        #TitleBar
+        titleBarlbl = QLabel(self)
+        titleBarlbl.setStyleSheet("background-color:#001324;" \
+        "opacity: 0.5;")
+        titleBarlbl.setFixedSize(900,28)
+        titleBarlbl.show()
+
+
+        lblStyle = "QLabel#lbl{color:white;border:none;font:16px;}"
+
+        fontlbl = QLabel(self)
+        fontlbl.setText("Font:")
+        fontlbl.setObjectName("lbl")
+        fontlbl.setStyleSheet(lblStyle)
+
+        colorlbl = QLabel(self)
+        colorlbl.setText("Color:")
+        colorlbl.setObjectName("lbl")
+        colorlbl.setStyleSheet(lblStyle)
+
+        sizelbl = QLabel(self)
+        sizelbl.setText("Size:")
+        sizelbl.setObjectName("lbl")
+        sizelbl.setStyleSheet(lblStyle)
 
         #Style for all functional buttons in program
         btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;}"
