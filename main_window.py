@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
-    ,QComboBox,QColorDialog,QCheckBox
+    ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect
 from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
 from PyQt5.QtCore import Qt
 from PIL import Image,ImageDraw,ImageFont
@@ -29,8 +29,10 @@ class Form(QMainWindow):
 
         #TitleBar
         titleBarlbl = QLabel(self)
-        titleBarlbl.setStyleSheet("background-color:#001324;" \
-        "opacity: 0.5;")
+        titleBarlbl.setStyleSheet("background-color:#ffffff;")
+        jj = QGraphicsOpacityEffect()
+        jj.setOpacity(0.3)
+        titleBarlbl.setWindowOpacity(jj)
         titleBarlbl.setFixedSize(900,28)
         titleBarlbl.show()
 
