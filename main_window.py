@@ -29,30 +29,51 @@ class Form(QMainWindow):
 
         #TitleBar
         titleBarlbl = QLabel(self)
-        titleBarlbl.setStyleSheet("background-color:#ffffff;")
-        jj = QGraphicsOpacityEffect()
-        jj.setOpacity(0.3)
-        titleBarlbl.setWindowOpacity(jj)
+        titleBarlbl.setStyleSheet("background-color:#001223;")
+        titleBarlblOpacityEffect = QGraphicsOpacityEffect()
+        titleBarlblOpacityEffect.setOpacity(0.8)
+        titleBarlbl.setGraphicsEffect(titleBarlblOpacityEffect)
         titleBarlbl.setFixedSize(900,28)
         titleBarlbl.show()
 
 
         lblStyle = "QLabel#lbl{color:white;border:none;font:16px;}"
 
+        tempPicturelbl = QLabel(self)
+        tempPicturelbl.setText("Add Template")
+        tempPicturelbl.setObjectName("lbl")
+        tempPicturelbl.setStyleSheet(lblStyle)
+        tempPicturelbl.move(734,91)
+
+        exitlbl = QLabel(self)
+        exitlbl.setText("\&#128470;")
+        exitlbl.move(880,2)
+        exitlbl.setStyleSheet("color: white")
+
         fontlbl = QLabel(self)
         fontlbl.setText("Font:")
         fontlbl.setObjectName("lbl")
         fontlbl.setStyleSheet(lblStyle)
+        fontlbl.move(488,369)
 
         colorlbl = QLabel(self)
         colorlbl.setText("Color:")
         colorlbl.setObjectName("lbl")
         colorlbl.setStyleSheet(lblStyle)
+        colorlbl.move(484,408)
 
         sizelbl = QLabel(self)
         sizelbl.setText("Size:")
         sizelbl.setObjectName("lbl")
         sizelbl.setStyleSheet(lblStyle)
+        sizelbl.move(495,447)
+
+        sizeTxtBox = QLineEdit(self)
+        sizeTxtBox.setFixedSize(160,27)
+        sizeTxtBox.move(304,443)
+        sizeTxtBox.setStyleSheet("background-color: #003f74;color: white;border: none")
+
+
 
         #Style for all functional buttons in program
         btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;}"
@@ -73,7 +94,7 @@ class Form(QMainWindow):
         addPicturebtn.setFixedSize(300,27)
         addPicturebtn.setObjectName("btn")
         addPicturebtn.setStyleSheet(btnStyle)
-        addPicturebtn.move(52,302)
+        addPicturebtn.move(548,295)
         addPicturebtn.clicked.connect(self.open_file_dialog)
 
         #button for adding data to list
@@ -82,7 +103,7 @@ class Form(QMainWindow):
         addDatabtn.setFixedSize(300,27)
         addDatabtn.setObjectName("btn")
         addDatabtn.setStyleSheet(btnStyle)
-        addDatabtn.move(53,514)
+        addDatabtn.move(548,509)
 
 
 
@@ -104,10 +125,12 @@ class Form(QMainWindow):
 
         # Color Picker button
         self.colorPicketBtn = QPushButton("Color",self)
-        self.colorPicketBtn.move(50,500)
+        self.colorPicketBtn.move(304,404)
         self.colorPicketBtn.setObjectName("btn")
         self.colorPicketBtn.setStyleSheet(btnStyle)
         self.colorPicketBtn.clicked.connect(self.openColorDialog)
+        self.colorPicketBtn.setFixedSize(160,27)
+
         self.fontColor = (0,0,0)
 
         showBtn = QPushButton(self)
@@ -120,8 +143,8 @@ class Form(QMainWindow):
         #Preview the image
         self.previewlbl = QLabel(self)
         self.previewlbl.setText("Empty")
-        self.previewlbl.move(377,94)
         self.previewlbl.setFixedSize(480,230)
+        self.previewlbl.move(44,93)
         self.previewlbl.setStyleSheet("background-color: #003f74;" \
         "text-align: justify")
     
@@ -135,7 +158,7 @@ class Form(QMainWindow):
         self.listOfSelectedFiles.setFixedSize(301,143)
         self.listOfSelectedFiles.setObjectName("list")
         self.listOfSelectedFiles.setStyleSheet(listStyle)
-        self.listOfSelectedFiles.move(53,148)
+        self.listOfSelectedFiles.move(548,137)
         self.listOfSelectedFiles.itemClicked.connect(self.on_item_clicked)
         
         #Style for all tables in program
@@ -146,7 +169,7 @@ class Form(QMainWindow):
         self.listOfloadedData.setFixedSize(300,143)
         self.listOfloadedData.setObjectName("table")
         self.listOfloadedData.setStyleSheet(tableStyle)
-        self.listOfloadedData.move(53,361)
+        self.listOfloadedData.move(548,352)
         self.listOfloadedData.show()
 
         #Load Fonts on system
@@ -154,8 +177,9 @@ class Form(QMainWindow):
 
         #ComboOfLoadedFonts
         self.cmboFont = QComboBox(self)
-        self.cmboFont.move(50,450)
-        self.cmboFont.setFixedWidth(200)
+        self.cmboFont.move(304,366)
+        self.cmboFont.setFixedWidth(160)
+
         # self.cmboFont.addItems(allFonts) # add fonts to combobox
         for font in allFonts:
            self.cmboFont.addItem(font)
@@ -164,6 +188,7 @@ class Form(QMainWindow):
            self.cmboFont.setItemData(index, QFont(font), role=Qt.FontRole)
 
         self.cmboFont.currentTextChanged.connect(self.get_text)
+        
         # Checkbox to Add pictures to a file
         enableAddPictureToTemplate = QCheckBox(self)
         enableAddPictureToTemplate.setText("enable to add pitures to Templae ")
@@ -171,17 +196,20 @@ class Form(QMainWindow):
         enableAddPictureToTemplate.stateChanged.connect(self.checkToEnableAddToTemplate)
 
         # list for template Picture
-        self.listForTemplatePictures = QListWidget(self)
-        self.listForTemplatePictures.move(50,50)
-        self.listForTemplatePictures.setDisabled(True)
+        self.lblForTemplatePictures = QLabel(self)
+        self.lblForTemplatePictures.setText("Null")
+        self.lblForTemplatePictures.setFixedSize(182,24)
+        self.lblForTemplatePictures.move(551,93)
+        self.lblForTemplatePictures.setStyleSheet("background-color: #003f74;color: white;")
+        self.lblForTemplatePictures.setDisabled(True)
 
 
         
     def checkToEnableAddToTemplate(self,checked):
         if checked:
-            self.listForTemplatePictures.setEnabled(True)
+            self.lblForTemplatePictures.setEnabled(True)
         else:
-            self.listForTemplatePictures.setDisabled(True)
+            self.lblForTemplatePictures.setDisabled(True)
 
     def get_text(self,fontname):
         from matplotlib import font_manager
