@@ -45,8 +45,14 @@ class Form(QMainWindow):
         tempPicturelbl.setStyleSheet(lblStyle)
         tempPicturelbl.move(734,91)
 
+        minimizelbl = QLabel(self)
+        minimizelbl.setText("\u005F")
+        minimizelbl.move(851,2)
+        minimizelbl.setStyleSheet("color: white")
+
+
         exitlbl = QLabel(self)
-        exitlbl.setText("\&#128470;")
+        exitlbl.setText("\u00D7")
         exitlbl.move(880,2)
         exitlbl.setStyleSheet("color: white")
 
