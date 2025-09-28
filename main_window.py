@@ -6,6 +6,41 @@ from PyQt5.QtCore import Qt
 from PIL import Image,ImageDraw,ImageFont
 from pathlib import Path
 import os
+import sys
+
+class ExitSystem(QLabel):
+    
+    def __init__(self,parent=None):
+        super(ExitSystem,self).__init__(parent)
+
+    def enterEvent(self, QEvent):
+        self.setStyleSheet("background-color: #05131f;" \
+        "color: white")
+        pass
+
+    def leaveEvent(self, QEvent):
+        self.setStyleSheet("color: white")
+        pass
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            sys.exit()
+
+class Minimize(QLabel):
+    
+    def __init__(self,parent=None):
+        super(Minimize,self).__init__(parent)
+
+    def enterEvent(self, QEvent):
+        self.setStyleSheet("background-color: #002c50;" \
+        "color: white")
+        pass
+    
+    def leaveEvent(self, QEvent):
+        self.setStyleSheet("color: white")
+        pass
+        
+
 
 class Form(QMainWindow):
     def __init__(self):
@@ -33,7 +68,8 @@ class Form(QMainWindow):
         titleBarlblOpacityEffect = QGraphicsOpacityEffect()
         titleBarlblOpacityEffect.setOpacity(0.8)
         titleBarlbl.setGraphicsEffect(titleBarlblOpacityEffect)
-        titleBarlbl.setFixedSize(900,28)
+        titleBarlbl.setFixedSize(900,24)
+        titleBarlbl.move(0,0)
         titleBarlbl.show()
 
 
@@ -51,10 +87,12 @@ class Form(QMainWindow):
         minimizelbl.setStyleSheet("color: white")
 
 
-        exitlbl = QLabel(self)
+        exitlbl = ExitSystem(self)
         exitlbl.setText("\u00D7")
-        exitlbl.move(880,2)
-        exitlbl.setStyleSheet("color: white")
+        exitlbl.move(870,0)
+        exitlbl.setFixedSize(30,24)
+        exitlbl.setAlignment(Qt.AlignCenter)
+        exitlbl.setStyleSheet("color: white;")
 
         fontlbl = QLabel(self)
         fontlbl.setText("Font:")
