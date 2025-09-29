@@ -32,7 +32,7 @@ class Minimize(QLabel):
         super(Minimize,self).__init__(parent)
 
     def enterEvent(self, QEvent):
-        self.setStyleSheet("background-color: #002c50;" \
+        self.setStyleSheet("background-color: #05131f;" \
         "color: white")
         pass
     
@@ -76,16 +76,19 @@ class Form(QMainWindow):
         lblStyle = "QLabel#lbl{color:white;border:none;font:16px;}"
 
         tempPicturelbl = QLabel(self)
-        tempPicturelbl.setText("Add Template")
+        tempPicturelbl.setText("تصویر الگو ")
         tempPicturelbl.setObjectName("lbl")
         tempPicturelbl.setStyleSheet(lblStyle)
         tempPicturelbl.move(734,91)
 
-        minimizelbl = QLabel(self)
+        minimizelbl = Minimize(self)
         minimizelbl.setText("\u005F")
-        minimizelbl.move(851,2)
+        minimizelbl.installEventFilter(self)
+        minimizelbl.setFixedSize(30,24)
+        minimizelbl.setAlignment(Qt.AlignCenter)
+        minimizelbl.move(840,0)
         minimizelbl.setStyleSheet("color: white")
-
+        minimizelbl.mousePressEvent = self.minimumState
 
         exitlbl = ExitSystem(self)
         exitlbl.setText("\u00D7")
@@ -94,20 +97,27 @@ class Form(QMainWindow):
         exitlbl.setAlignment(Qt.AlignCenter)
         exitlbl.setStyleSheet("color: white;")
 
+        saveLocationlbl = QLabel(self)
+        saveLocationlbl.setObjectName("lbl")
+        saveLocationlbl.setStyleSheet(lblStyle)
+        saveLocationlbl.move(38,360)
+        saveLocationlbl.setFixedSize(238,24)
+
+
         fontlbl = QLabel(self)
-        fontlbl.setText("Font:")
+        fontlbl.setText("فونت")
         fontlbl.setObjectName("lbl")
         fontlbl.setStyleSheet(lblStyle)
         fontlbl.move(488,369)
 
         colorlbl = QLabel(self)
-        colorlbl.setText("Color:")
+        colorlbl.setText("رنگ")
         colorlbl.setObjectName("lbl")
         colorlbl.setStyleSheet(lblStyle)
         colorlbl.move(484,408)
 
         sizelbl = QLabel(self)
-        sizelbl.setText("Size:")
+        sizelbl.setText("اندازه")
         sizelbl.setObjectName("lbl")
         sizelbl.setStyleSheet(lblStyle)
         sizelbl.move(495,447)
@@ -134,7 +144,7 @@ class Form(QMainWindow):
 
         #button for adding to picture list
         addPicturebtn = QPushButton(self)
-        addPicturebtn.setText("add picture")
+        addPicturebtn.setText("اضافه کردن تصویر")
         addPicturebtn.setFixedSize(300,27)
         addPicturebtn.setObjectName("btn")
         addPicturebtn.setStyleSheet(btnStyle)
@@ -143,7 +153,7 @@ class Form(QMainWindow):
 
         #button for adding data to list
         addDatabtn = QPushButton(self)
-        addDatabtn.setText("add data")
+        addDatabtn.setText("اضافه کردن اطلاعات")
         addDatabtn.setFixedSize(300,27)
         addDatabtn.setObjectName("btn")
         addDatabtn.setStyleSheet(btnStyle)
@@ -359,6 +369,8 @@ class Form(QMainWindow):
                 draw.text((x,y),cellData,font=ImageFont.truetype(self.font_path,15),fill=self.fontColor,align="center")
             img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
                 
+    def minimumState(self,event):
+        self.showMinimized()
 
         
 
