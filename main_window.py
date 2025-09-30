@@ -73,7 +73,7 @@ class Form(QMainWindow):
         titleBarlbl.show()
 
 
-        lblStyle = "QLabel#lbl{color:white;border:none;font:16px;}"
+        lblStyle = "QLabel#lbl{color:white;border:none;font:16px;font-family: B Koodak;}"
 
         tempPicturelbl = QLabel(self)
         tempPicturelbl.setText("تصویر الگو ")
@@ -106,21 +106,25 @@ class Form(QMainWindow):
 
         fontlbl = QLabel(self)
         fontlbl.setText("فونت")
+        fontlbl.move(488,369)
+        fontlbl.setFixedSize(30,28)
         fontlbl.setObjectName("lbl")
         fontlbl.setStyleSheet(lblStyle)
-        fontlbl.move(488,369)
+        
 
         colorlbl = QLabel(self)
         colorlbl.setText("رنگ")
+        colorlbl.move(484,408)
+        colorlbl.setFixedSize(30,28)
         colorlbl.setObjectName("lbl")
         colorlbl.setStyleSheet(lblStyle)
-        colorlbl.move(484,408)
 
         sizelbl = QLabel(self)
         sizelbl.setText("اندازه")
+        sizelbl.move(495,447)
+        sizelbl.setFixedSize(30,28)
         sizelbl.setObjectName("lbl")
         sizelbl.setStyleSheet(lblStyle)
-        sizelbl.move(495,447)
 
         sizeTxtBox = QLineEdit(self)
         sizeTxtBox.setFixedSize(160,27)
@@ -130,7 +134,7 @@ class Form(QMainWindow):
 
 
         #Style for all functional buttons in program
-        btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;}"
+        btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;font-family: B Koodak;}"
 
 
         #MessageBox
@@ -163,10 +167,10 @@ class Form(QMainWindow):
 
         #Add Text
         addbtn = QPushButton(self)
-        addbtn.setText("Run")
+        addbtn.setText("ذخیره")
         addbtn.setObjectName("btn")
         addbtn.setStyleSheet(btnStyle)
-        addbtn.move(400,100)
+        addbtn.move(100,500)
         addbtn.clicked.connect(self.edit_files)
 
         #Add more textbox
@@ -174,7 +178,7 @@ class Form(QMainWindow):
         addMoreTextBoxbtn.setText("+")
         addMoreTextBoxbtn.setObjectName("btn")
         addMoreTextBoxbtn.setStyleSheet(btnStyle)
-        addMoreTextBoxbtn.move(400,150)
+        addMoreTextBoxbtn.move(100,450)
         addMoreTextBoxbtn.clicked.connect(self.addMoretxtBoxes)
 
         # Color Picker button
@@ -191,7 +195,7 @@ class Form(QMainWindow):
         showBtn.setText("Show")
         showBtn.setObjectName("btn")
         showBtn.setStyleSheet(btnStyle)
-        showBtn.move(500,50)
+        showBtn.move(100,400)
         showBtn.clicked.connect(self.showmsg)
 
         #Preview the image
@@ -233,6 +237,7 @@ class Form(QMainWindow):
         self.cmboFont = QComboBox(self)
         self.cmboFont.move(304,366)
         self.cmboFont.setFixedWidth(160)
+        self.cmboFont.setStyleSheet("background-color: #003f74 ;color: white;")
 
         # self.cmboFont.addItems(allFonts) # add fonts to combobox
         for font in allFonts:
