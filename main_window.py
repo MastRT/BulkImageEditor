@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
     ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect
 from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QPoint
 from PIL import Image,ImageDraw,ImageFont
 from pathlib import Path
 import os
@@ -70,10 +70,14 @@ class Form(QMainWindow):
         titleBarlbl.setGraphicsEffect(titleBarlblOpacityEffect)
         titleBarlbl.setFixedSize(900,24)
         titleBarlbl.move(0,0)
+        titleBarlbl.setText("    Image Editor")
+        titleBarlbl.mousePressEvent = self.PressEvent
+        titleBarlbl.mouseMoveEvent = self.MoveEvent
         titleBarlbl.show()
 
 
-        lblStyle = "QLabel#lbl{color:white;border:none;font:16px;font-family: B Koodak;}"
+        lblStyle = "QLabel#lbl{color:white;border:none;font:16px;font-family: B Koodak;}" \
+        "QLabel#addressBar{background-color: #003f74}"
 
         tempPicturelbl = QLabel(self)
         tempPicturelbl.setText("تصویر الگو ")
@@ -97,11 +101,11 @@ class Form(QMainWindow):
         exitlbl.setAlignment(Qt.AlignCenter)
         exitlbl.setStyleSheet("color: white;")
 
-        saveLocationlbl = QLabel(self)
-        saveLocationlbl.setObjectName("lbl")
-        saveLocationlbl.setStyleSheet(lblStyle)
-        saveLocationlbl.move(38,360)
-        saveLocationlbl.setFixedSize(238,24)
+        self.saveLocationlbl = QLabel(self)
+        self.saveLocationlbl.setObjectName("addressBar")
+        self.saveLocationlbl.setStyleSheet(lblStyle)
+        self.saveLocationlbl.move(44,369)
+        self.saveLocationlbl.setFixedSize(230,24)
 
 
         fontlbl = QLabel(self)
@@ -135,12 +139,6 @@ class Form(QMainWindow):
 
         #Style for all functional buttons in program
         btnStyle = "QPushButton#btn{background-color: #003f74;color:white;border:none;font:16px;font-family: B Koodak;}"
-
-
-        #MessageBox
-        self.message = QMessageBox(self)
-        self.message.setText("that's it")
-        self.message.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         
         #directory Dialog
         dialog = QFileDialog(self)
@@ -162,9 +160,18 @@ class Form(QMainWindow):
         addDatabtn.setObjectName("btn")
         addDatabtn.setStyleSheet(btnStyle)
         addDatabtn.move(548,509)
+        addDatabtn.clicked.connect(self.loadData)
 
 
-
+        #Choose Save Location Button
+        saveLocationbtn = QPushButton(self)
+        saveLocationbtn.setText("انتخاب محل ذخیره")
+        saveLocationbtn.setFixedSize(230,24)
+        saveLocationbtn.move(44,408)
+        saveLocationbtn.setObjectName("btn")
+        saveLocationbtn.setStyleSheet(btnStyle)
+        saveLocationbtn.clicked.connect(self.saveLocation)
+        
         #Add Text
         addbtn = QPushButton(self)
         addbtn.setText("ذخیره")
@@ -191,16 +198,10 @@ class Form(QMainWindow):
 
         self.fontColor = (0,0,0)
 
-        showBtn = QPushButton(self)
-        showBtn.setText("Show")
-        showBtn.setObjectName("btn")
-        showBtn.setStyleSheet(btnStyle)
-        showBtn.move(100,400)
-        showBtn.clicked.connect(self.showmsg)
-
         #Preview the image
         self.previewlbl = QLabel(self)
         self.previewlbl.setText("Empty")
+        self.previewlbl.setAlignment(Qt.AlignCenter)
         self.previewlbl.setFixedSize(480,230)
         self.previewlbl.move(44,93)
         self.previewlbl.setStyleSheet("background-color: #003f74;" \
@@ -262,6 +263,14 @@ class Form(QMainWindow):
         self.lblForTemplatePictures.setStyleSheet("background-color: #003f74;color: white;")
         self.lblForTemplatePictures.setDisabled(True)
 
+    def PressEvent(self, event):
+        self.oldPos = event.globalPos()
+
+    def MoveEvent(self, event):
+        delta = QPoint (event.globalPos() - self.oldPos)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPos = event.globalPos()
+
 
         
     def checkToEnableAddToTemplate(self,checked):
@@ -281,37 +290,45 @@ class Form(QMainWindow):
             self.fontColor = color.getRgb()[:3]
 
     def loadListOfNamesFile(self):
-        file_path = "C:\\Users\\Reza\\Desktop\\sampleData.txt"
-        file = open(file_path,'r')
-        lines = file.readlines()
-        return lines
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select Files",
+            "D://",
+            "Txt (*.txt)"
+        )
+        file_path = filename
+        if file_path:
+            file = open(file_path,'r')
+            lines = file.readlines()
+            return lines
     
 
-    def showmsg(self):
+    def loadData(self):
         lines = self.loadListOfNamesFile() #Seperated the loading procces into another function for better clarity
-        listOfHeaders = [] #this var will be used to store column name
-        numberOfColumns = 0
-        row = 0
-        column = 0
-        lookingForHeader = True #at first function tries to look for header name in first lines so it's True by default
-        for line in lines:
-            if lookingForHeader == True:
-                if line == "--\n": # of you reached the end of header section
-                    lookingForHeader = False
-                    self.listOfloadedData.setColumnCount(column)
-                    self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
-                column += 1
-                listOfHeaders.append(line)
-            if lookingForHeader == False:
-                self.listOfloadedData.setRowCount(row+1)
-                if (line != "==\n") and (line != "--\n"):
-                    if numberOfColumns < len(listOfHeaders):
-                        self.listOfloadedData.setItem(row,numberOfColumns,QTableWidgetItem(line))
-                        numberOfColumns += 1
-                if line == "==\n":
-                    row += 1
-                    numberOfColumns = 0
-        self.listOfloadedData.resizeRowsToContents()
+        if lines:
+            listOfHeaders = [] #this var will be used to store column name
+            numberOfColumns = 0
+            row = 0
+            column = 0
+            lookingForHeader = True #at first function tries to look for header name in first lines so it's True by default
+            for line in lines:
+                if lookingForHeader == True:
+                    if line == "--\n": # of you reached the end of header section
+                        lookingForHeader = False
+                        self.listOfloadedData.setColumnCount(column)
+                        self.listOfloadedData.setHorizontalHeaderLabels(listOfHeaders)
+                    column += 1
+                    listOfHeaders.append(line)
+                if lookingForHeader == False:
+                    self.listOfloadedData.setRowCount(row+1)
+                    if (line != "==\n") and (line != "--\n"):
+                        if numberOfColumns < len(listOfHeaders):
+                            self.listOfloadedData.setItem(row,numberOfColumns,QTableWidgetItem(line))
+                            numberOfColumns += 1
+                    if line == "==\n":
+                        row += 1
+                        numberOfColumns = 0
+            self.listOfloadedData.resizeRowsToContents()
 
    
 
@@ -360,22 +377,34 @@ class Form(QMainWindow):
             
 
     def edit_files(self):
-        listOfPositions = [[89,43],[97,105],[114,169],[296,44]] #position of text to draw
-        numberOfTableRows = self.listOfloadedData.rowCount()
-        numberOfTableColumns = self.listOfloadedData.columnCount()
-        addressOfPicture = self.fileNameAndAddress[0][1] #load first line of addressbox
-        for row in range(0,numberOfTableRows):
-            img = Image.open(addressOfPicture)
-            draw = ImageDraw.Draw(img)
-            for column in range(0,numberOfTableColumns):
-                cellData = self.listOfloadedData.item(row,column).text()
-                x = listOfPositions[column][0]
-                y = listOfPositions[column][1]
-                draw.text((x,y),cellData,font=ImageFont.truetype(self.font_path,15),fill=self.fontColor,align="center")
-            img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
+        try:
+            listOfPositions = [[89,43],[97,105],[114,169],[296,44]] #position of text to draw
+            numberOfTableRows = self.listOfloadedData.rowCount()
+            numberOfTableColumns = self.listOfloadedData.columnCount()
+            addressOfPicture = self.fileNameAndAddress[0][1] #load first line of addressbox
+            for row in range(0,numberOfTableRows):
+                img = Image.open(addressOfPicture)
+                draw = ImageDraw.Draw(img)
+                for column in range(0,numberOfTableColumns):
+                    cellData = self.listOfloadedData.item(row,column).text()
+                    x = listOfPositions[column][0]
+                    y = listOfPositions[column][1]
+                    draw.text((x,y),cellData,font=ImageFont.truetype(self.font_path,15),fill=self.fontColor,align="center")
+                img.save((f"C:\\Users\\Reza\\Desktop\\result\\res{row}{column}-{self.fileNameAndAddress[0][0]}"))
+        except:
+            message = QMessageBox(self)
+            message.setIcon(QMessageBox.Critical)
+            message.setWindowTitle("خطا")
+            message.setText("محل ذخیره انتخاب نشده است")
+            message.setStandardButtons(QMessageBox.Close)
+            message.exec()
                 
     def minimumState(self,event):
         self.showMinimized()
+
+    def saveLocation(self):
+        location = QFileDialog.getExistingDirectory(self,"select directory")
+        self.saveLocationlbl.setText(location)
 
         
 
