@@ -1,12 +1,15 @@
 from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
-    ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect
+    ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect,QVBoxLayout \
+    ,QHBoxLayout,QWidget
 from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
 from PyQt5.QtCore import Qt,QPoint
 from PIL import Image,ImageDraw,ImageFont
 from pathlib import Path
+from ruler import ImageView,Ruler
 import os
 import sys
+
 
 class ExitSystem(QLabel):
     
@@ -255,13 +258,36 @@ class Form(QMainWindow):
         enableAddPictureToTemplate.move(0,0)
         enableAddPictureToTemplate.stateChanged.connect(self.checkToEnableAddToTemplate)
 
+
+        centeral = QWidget(self)
+        self.setCentralWidget(centeral)
+
+        templateAddressWindow = QWidget(centeral)
+        templateAddressWindow.move(551,93)
+        templateAddressWindow.setFixedSize(182,24)
+        templateAddressWindow.setStyleSheet("background-color: white")
+
         # list for template Picture
-        self.lblForTemplatePictures = QLabel(self)
+        self.lblForTemplatePictures = QLabel(templateAddressWindow)
         self.lblForTemplatePictures.setText("Null")
-        self.lblForTemplatePictures.setFixedSize(182,24)
-        self.lblForTemplatePictures.move(551,93)
+        # self.lblForTemplatePictures.setFixedSize(182,24)
+        # self.lblForTemplatePictures.move(551,93)
         self.lblForTemplatePictures.setStyleSheet("background-color: #003f74;color: white;")
         self.lblForTemplatePictures.setDisabled(True)
+
+        openTemplateAddressBar = QLabel(templateAddressWindow)
+        openTemplateAddressBar.setText("...")
+
+        templateAddressHolder = QHBoxLayout()
+        templateAddressHolder.setContentsMargins(0,0,0,0)
+        templateAddressHolder.addWidget(self.lblForTemplatePictures)
+        templateAddressHolder.addWidget(openTemplateAddressBar)
+
+
+        templateAddressWindow.setLayout(templateAddressHolder)
+        
+
+        
 
     def PressEvent(self, event):
         self.oldPos = event.globalPos()
@@ -343,11 +369,13 @@ class Form(QMainWindow):
         
     
     def on_item_clicked(self,item):
+        file = ""
         for address in self.fileNameAndAddress: # looking to find the location of corespondong selected image
             # if item.text() != "":
                 if item.text() == address[0]:   #check if the file names are Same
                     try: #Try opening the thumbnail if it was created before
                         pixmap = QPixmap(f"C:\\Users\\Reza\\Desktop\\temp\\thumbnail-{item.text()}")
+                        file = pixmap
                         self.previewlbl.setPixmap(pixmap)
                     finally: #if the thumbnail was not created,tries to create it
                         image = Image.open(address[1])
@@ -355,6 +383,23 @@ class Form(QMainWindow):
                         max_size = (256,256)
                         image.thumbnail(max_size,Image.Resampling.LANCZOS)
                         image.save(f"C:\\Users\\Reza\\Desktop\\temp\\thumbnail-{item.text()}")
+        
+        imageView = ImageView()
+        imageView.loadImage(file)
+        # Rulers
+        topRuler = Ruler(Qt.Horizontal)
+        leftRuler = Ruler(Qt.Vertical)
+
+        layout = QVBoxLayout()
+        layout.addWidget(topRuler)
+        hLayout = QHBoxLayout()
+        hLayout.addWidget(leftRuler)
+        hLayout.addWidget(self.imageView)
+        layout.addLayout(hLayout)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
         
 
     
