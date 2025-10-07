@@ -1,12 +1,10 @@
 from PyQt5.QtWidgets import QLabel,QMainWindow,QLineEdit,QPushButton \
     ,QFileDialog,QListWidget,QMessageBox,QTableWidget,QTableWidgetItem \
-    ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect,QVBoxLayout \
-    ,QHBoxLayout,QWidget
+    ,QComboBox,QColorDialog,QCheckBox,QGraphicsOpacityEffect
 from PyQt5.QtGui import QPixmap,QFontDatabase,QFont
 from PyQt5.QtCore import Qt,QPoint
 from PIL import Image,ImageDraw,ImageFont
 from pathlib import Path
-from ruler import ImageView,Ruler
 import os
 import sys
 
@@ -80,7 +78,7 @@ class Form(QMainWindow):
 
 
         lblStyle = "QLabel#lbl{color:white;border:none;font:16px;font-family: B Koodak;}" \
-        "QLabel#addressBar{background-color: #003f74}"
+        "QLabel#addressBar{background-color: #003f74;color: white;}"
 
         tempPicturelbl = QLabel(self)
         tempPicturelbl.setText("تصویر الگو ")
@@ -209,7 +207,8 @@ class Form(QMainWindow):
         self.previewlbl.move(44,93)
         self.previewlbl.setStyleSheet("background-color: #003f74;" \
         "text-align: justify")
-    
+
+        
 
         
         #Style for all lists in program
@@ -254,37 +253,43 @@ class Form(QMainWindow):
         
         # Checkbox to Add pictures to a file
         enableAddPictureToTemplate = QCheckBox(self)
-        enableAddPictureToTemplate.setText("enable to add pitures to Templae ")
-        enableAddPictureToTemplate.move(0,0)
+        enableAddPictureToTemplate.move(200,500)
+        enableAddPictureToTemplate.setFixedSize(150,24)
+        enableAddPictureToTemplate.setText("استفاده از تصویر الگو")
+        enableAddPictureToTemplate.setStyleSheet("background-color: white")
         enableAddPictureToTemplate.stateChanged.connect(self.checkToEnableAddToTemplate)
 
-
-        centeral = QWidget(self)
-        self.setCentralWidget(centeral)
-
-        templateAddressWindow = QWidget(centeral)
-        templateAddressWindow.move(551,93)
-        templateAddressWindow.setFixedSize(182,24)
-        templateAddressWindow.setStyleSheet("background-color: white")
-
-        # list for template Picture
-        self.lblForTemplatePictures = QLabel(templateAddressWindow)
+        tempDisabledStyle = "#temp{background-color: #003f74;color: white;border: none;}" \
+        "#temp:Disabled{background-color: #516b81;color: white;border: none;border-left: 3px solid black;}"
+        # label for template Picture
+        self.lblForTemplatePictures = QLabel(self)
         self.lblForTemplatePictures.setText("Null")
-        # self.lblForTemplatePictures.setFixedSize(182,24)
-        # self.lblForTemplatePictures.move(551,93)
-        self.lblForTemplatePictures.setStyleSheet("background-color: #003f74;color: white;")
+        self.lblForTemplatePictures.setFixedSize(175,24)
+        self.lblForTemplatePictures.move(551,93)
+        self.lblForTemplatePictures.setObjectName("temp")
+        self.lblForTemplatePictures.setStyleSheet(tempDisabledStyle)
         self.lblForTemplatePictures.setDisabled(True)
 
-        openTemplateAddressBar = QLabel(templateAddressWindow)
-        openTemplateAddressBar.setText("...")
+        # button to choose address for template picture
+        self.openTemplateAddressBarbtn = QPushButton(self)
+        self.openTemplateAddressBarbtn.setText("...")
+        self.openTemplateAddressBarbtn.setFixedSize(25,24)
+        self.openTemplateAddressBarbtn.move(726,93)
+        self.openTemplateAddressBarbtn.setObjectName("temp")
+        self.openTemplateAddressBarbtn.setStyleSheet(tempDisabledStyle)
+        self.openTemplateAddressBarbtn.setDisabled(True)
+        self.openTemplateAddressBarbtn.clicked.connect(self.chooseTemp)
 
-        templateAddressHolder = QHBoxLayout()
-        templateAddressHolder.setContentsMargins(0,0,0,0)
-        templateAddressHolder.addWidget(self.lblForTemplatePictures)
-        templateAddressHolder.addWidget(openTemplateAddressBar)
-
-
-        templateAddressWindow.setLayout(templateAddressHolder)
+    def chooseTemp(self):
+        fileAddress,_ = QFileDialog.getOpenFileName(
+            self,
+            "Select Template File",
+            "D://",
+            "Images (*.png *.jpg)"
+        )
+        self.lblForTemplatePictures.setText(fileAddress)
+        pixmap = QPixmap(fileAddress)
+        self.previewlbl.setPixmap(pixmap)
         
 
         
@@ -302,8 +307,10 @@ class Form(QMainWindow):
     def checkToEnableAddToTemplate(self,checked):
         if checked:
             self.lblForTemplatePictures.setEnabled(True)
+            self.openTemplateAddressBarbtn.setEnabled(True)
         else:
             self.lblForTemplatePictures.setDisabled(True)
+            self.openTemplateAddressBarbtn.setDisabled(True)
 
     def get_text(self,fontname):
         from matplotlib import font_manager
@@ -384,28 +391,12 @@ class Form(QMainWindow):
                         image.thumbnail(max_size,Image.Resampling.LANCZOS)
                         image.save(f"C:\\Users\\Reza\\Desktop\\temp\\thumbnail-{item.text()}")
         
-        imageView = ImageView()
-        imageView.loadImage(file)
-        # Rulers
-        topRuler = Ruler(Qt.Horizontal)
-        leftRuler = Ruler(Qt.Vertical)
-
-        layout = QVBoxLayout()
-        layout.addWidget(topRuler)
-        hLayout = QHBoxLayout()
-        hLayout.addWidget(leftRuler)
-        hLayout.addWidget(self.imageView)
-        layout.addLayout(hLayout)
-
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
+        
         
 
     
     def open_file_dialog(self):
         self.listofFilesAddress = []
-        # nameAndAddressTuple = tuple()
         filenames, _ = QFileDialog.getOpenFileNames(
             self,
             "Select Files",
